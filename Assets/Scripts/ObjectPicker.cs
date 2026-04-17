@@ -45,10 +45,14 @@ public class ObjectPicker : MonoBehaviour
     public float pickedRbDragAngular = 100;
     float pickedRbDragAngularOriginal;
 
+    private NewInput input;
     void Start()
     {
         if (cam == null)
             cam = Camera.main;
+
+        input = new NewInput();
+        input.Enable();
     }
 
     // Update is called once per frame
@@ -148,7 +152,7 @@ public class ObjectPicker : MonoBehaviour
     void StartPickup()
     {
         if (pickedObject != null || pickableObject == null || state != PICKSTATE.AVAILABLE) return;
-        if (Input.GetMouseButtonDown(0))
+        if (input.Player.CojerItems.WasPressedThisFrame())
         {
             pickedObject = pickableObject;
             pickableObject = null;
@@ -176,7 +180,7 @@ public class ObjectPicker : MonoBehaviour
     void EndPickup()
     {
         if (pickedObject == null) return;
-        if (Input.GetMouseButtonUp(0))
+        if (input.Player.CojerItems.WasReleasedThisFrame())
         {
             pickedObject.rb.linearDamping = pickedRbDragLinearOriginal;
             pickedObject.rb.angularDamping = pickedRbDragAngularOriginal;

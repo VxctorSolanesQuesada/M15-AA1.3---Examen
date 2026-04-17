@@ -21,11 +21,18 @@ public class ObjectThrower : MonoBehaviour
     public float forceSpeed;
     public float distance = 1;
 
+    private NewInput input;
 
+    private void Start()
+    {
+        input = new NewInput();
+        input.Enable();
+        forceIndicator.fillAmount = 0;
+    }
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(1))
+        if (input.Player.LanzarItems.IsPressed())
         {
             force += forceSpeed * Time.deltaTime;
             if (force < forceMin)
@@ -38,16 +45,19 @@ public class ObjectThrower : MonoBehaviour
                 force = forceMax;
                 forceSpeed *= -1;
             }
+            forceIndicator.fillAmount = force / forceMax;
         }
-        else if (Input.GetMouseButtonUp(1))
+        else if (input.Player.LanzarItems.WasReleasedThisFrame())
         {
             GameObject temp = Instantiate(objects[selected].obj, transform.position + transform.forward * distance, transform.rotation);
             temp.GetComponent<Rigidbody>().AddForce(transform.forward * force, ForceMode.VelocityChange);
             force = forceMin;
+            forceIndicator.fillAmount = 0;
         }
         else
         {
-            selected += (int)Input.mouseScrollDelta.y;
+            Vector2 inputValue = input.Player.CambiarItems.ReadValue<Vector2>();
+            selected += (int)inputValue.y;
             if(selected >= objects.Length)
             {
                 selected = 0;
